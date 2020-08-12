@@ -1,0 +1,101 @@
+{
+  "name": "commerceml-parser",
+  "version": "1.1",
+  "description": "Parser for CommerceML standard developed by 1c.ru",
+  "license": "MIT",
+  "repository": {
+    "type": "Github",
+    "url": "https://github.com/dobromyslov/commerceml-parser"
+  },
+  "bugs": {
+    "url": "https://github.com/dobromyslov/commerceml-parser/issues"
+  },
+  "author": "Viacheslav Dobromyslov <viacheslav@dobromyslov.ru>",
+  "keywords": [
+    "commerceml",
+    "1C",
+    "parser"
+  ],
+  "files": [
+    "dist"
+  ],
+  "main": "dist",
+  "types": "dist",
+  "sideEffects": false,
+  "scripts": {
+    "example": "jasmine-ts",
+    "test": "xo && tsc --noEmit && nyc jasmine-ts",
+    "release": "npm run build && np",
+    "build": "del-cli dist && tsc"
+  },
+  "eslintConfig": {
+    "extends": [
+      "xo/esnext",
+      "xo-typescript",
+      "xo-typescript/space"
+    ]
+  },
+  "xo": {
+    "extends": [
+      "xo-typescript"
+    ],
+    "extensions": [
+      "ts"
+    ],
+    "ignores": [
+      "spec/"
+    ],
+    "space": true,
+    "rules": {
+      "@typescript-eslint/indent": "off",
+      "import/no-unassigned-import": [
+        "error",
+        {
+          "allow": [
+            "reflect-metadata"
+          ]
+        }
+      ]
+    }
+  },
+  "nyc": {
+    "extends": "@istanbuljs/nyc-config-typescript",
+    "all": true,
+    "include": [
+      "src/**"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "reporter": [
+      "lcovonly",
+      "text",
+      "text-summary"
+    ]
+  },
+  "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "^1.0.1",
+    "@types/jasmine": "^3.5.12",
+    "@types/luxon": "^1.24.3",
+    "@types/node": "^13.11.0",
+    "@types/sax": "^1.2.1",
+    "@typescript-eslint/eslint-plugin": "^3.9.0",
+    "@typescript-eslint/parser": "^3.9.0",
+    "del-cli": "^3.0.1",
+    "eslint-config-xo": "^0.32.1",
+    "eslint-config-xo-typescript": "^0.32.0",
+    "jasmine": "^3.6.1",
+    "jasmine-ts": "^0.3.0",
+    "np": "^6.4.0",
+    "nyc": "^15.1.0",
+    "source-map-support": "^0.5.19",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.7",
+    "xo": "^0.33.0"
+  },
+  "dependencies": {
+    "entities": "^2.0.3",
+    "sax": "^1.2.4",
+    "x2js": "^3.4.0"
+  }
+}

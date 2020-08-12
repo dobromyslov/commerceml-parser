@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "module": "commonjs",
+    "lib": ["es2018", "dom"],
+    "declaration": true,
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "newLine": "lf",
+    "stripInternal": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noFallthroughCasesInSwitch": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "compileOnSave": true,
+  "include": [
+    "src"
+  ]
+}
