@@ -1,6 +1,7 @@
 import {createStream, QualifiedTag, SAXStream, Tag} from 'sax';
 import {encodeXML} from 'entities/lib';
 import X2JS from 'x2js';
+import {Readable} from 'stream';
 
 export class CommerceMlCollectRule {
   start: string[] = [];
@@ -11,7 +12,7 @@ export abstract class CommerceMlAbstractParser {
   /**
    * SAX Parser instance.
    */
-  protected parser?: SAXStream;
+  protected parser: SAXStream;
 
   /**
    *
@@ -43,10 +44,7 @@ export abstract class CommerceMlAbstractParser {
    */
   protected collectOpenTags: string[] = [];
 
-  /**
-   * Creates SAX stream for XML parsing.
-   */
-  public createStream(): SAXStream {
+  constructor() {
     this.parser = createStream(true, {
       trim: true,
       normalize: true
@@ -63,7 +61,30 @@ export abstract class CommerceMlAbstractParser {
     this.parser.on('text', (text: string) => {
       this.onText(text);
     });
+  }
 
+  /**
+   * Starts parsing readable stream.
+   * @param readStream
+   */
+  public async parse(readStream: Readable): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.parser.on('end', () => {
+        resolve();
+      });
+
+      this.parser.on('error', error => {
+        reject(error);
+      });
+
+      readStream.pipe(this.parser);
+    });
+  }
+
+  /**
+   * Returns SAX stream.
+   */
+  public getStream(): SAXStream {
     return this.parser;
   }
 

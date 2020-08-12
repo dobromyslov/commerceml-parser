@@ -3,19 +3,16 @@ import {createReadStream} from "fs";
 
 describe('CommerceMlParser', () => {
   it('is ok', async () => {
-    const stream = new CommerceMlImportParser().createStream();
-    stream.on('classifier', data => {
-      console.log('classifier:', JSON.stringify(data));
+    const catalogImportParser = new CommerceMlImportParser();
+    catalogImportParser.onClassifier(classifier => {
+      console.log('classifier', JSON.stringify(classifier));
     });
 
-    stream.on('classifierGroup', data => {
-      console.log('classifierGroup:', JSON.stringify(data));
+    catalogImportParser.onClassifierGroup(classifierGroup => {
+      console.log('classifierGroup', JSON.stringify(classifierGroup));
     });
 
-    stream.on('error', error => {
-      console.log('error', error);
-    });
-
-    createReadStream('./data/import0_1_with_nested_groups.xml').pipe(stream);
+    await catalogImportParser.parse(createReadStream('./data/import0_1_with_nested_groups.xml'));
+    console.log('Done');
   });
 });

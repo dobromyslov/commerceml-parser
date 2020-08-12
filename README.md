@@ -37,31 +37,22 @@ Here is a common usage example:
 import {CommerceMlImportParser} from 'commerceml-parser/import-parser';
 import {createReadStream} from "fs";
 
-// Create parser stream for CommerceML catalog import file
-const parserStream = new CommerceMlImportParser().createStream();
+// Create parser for CommerceML catalog import file
+const catalogImportParser = new CommerceMlImportParser();
 
 // Define handler for classifier XML block
-parserStream.on('classifier', data => {
-  console.log('classifier:', JSON.stringify(data));
+catalogImportParser.onClassifier(classifier => {
+  console.log('classifier', JSON.stringify(classifier));
 });
+
 
 // Define handler for classifier group XML blocks
-parserStream.on('classifierGroup', data => {
-  console.log('classifierGroup:', JSON.stringify(data));
-});
-
-// Define handler for parser error
-parserStream.on('error', error => {
-  console.log('error', error);
-});
-
-// Define handler for file end
-parserStream.on('end', _ => {
-  console.log('Done.');    
+catalogImportParser.onClassifierGroup(classifierGroup => {
+  console.log('classifierGroup', JSON.stringify(classifierGroup));
 });
 
 // Read CommerceML file and feed it to the parser stream
-createReadStream('./data/import0_1_with_nested_groups.xml').pipe(parserStream);
+await catalogImportParser.parse(createReadStream('./data/import0_1_with_nested_groups.xml'));
 ``` 
 
 ## Thanks to
