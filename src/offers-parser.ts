@@ -78,7 +78,7 @@ export class CommerceMlOffersParser extends CommerceMlAbstractParser {
     });
   }
 
-  protected onWarehouse(callback: (warehouse: Warehouse) => void): void {
+  public onWarehouse(callback: (warehouse: Warehouse) => void): void {
     this.parser.on('warehouse', (data: any) => {
       const warehouseXml = data.Склад;
       const warehouse: Warehouse = {
@@ -90,7 +90,7 @@ export class CommerceMlOffersParser extends CommerceMlAbstractParser {
     });
   }
 
-  protected onOffer(callback: (offer: Offer) => void): void {
+  public onOffer(callback: (offer: Offer) => void): void {
     this.parser.on('offer', (data: any) => {
       const offerXml = data.Предложение;
       const offer: Offer = {
