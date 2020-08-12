@@ -88,6 +88,10 @@ export abstract class CommerceMlAbstractParser {
     return this.parser;
   }
 
+  public destroy(): void {
+    this.parser.destroy();
+  }
+
   /**
    * SAX 'opentag' event handler.
    * @param tag
