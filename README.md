@@ -40,6 +40,11 @@ import {createReadStream} from "fs";
 // Create parser for CommerceML catalog import file
 const catalogImportParser = new CommerceMlImportParser();
 
+// Define handler for commercial information header
+catalogImportParser.onCommercialInformation(commercialInformation => {
+  console.log('commercialInformation', JSON.stringify(commercialInformation));
+});
+
 // Define handler for classifier XML block
 catalogImportParser.onClassifier(classifier => {
   console.log('classifier', JSON.stringify(classifier));

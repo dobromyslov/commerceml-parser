@@ -76,7 +76,6 @@
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@types/jasmine": "^3.5.12",
-    "@types/luxon": "^1.24.3",
     "@types/node": "^13.11.0",
     "@types/sax": "^1.2.1",
     "@typescript-eslint/eslint-plugin": "^3.9.0",

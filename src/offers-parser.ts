@@ -18,7 +18,7 @@ export class CommerceMlOffersParser extends CommerceMlAbstractParser {
     this.parser.on('commercialInformation', (data: any) => {
       const commercialInformation: CommercialInformation = {
         schemaVersion: data.КоммерческаяИнформация._ВерсияСхемы,
-        creationTimestamp: data.КоммерческаяИнформация._ДатаФормирования
+        creationTimestamp: new Date(data.КоммерческаяИнформация._ДатаФормирования)
       };
 
       callback(commercialInformation);

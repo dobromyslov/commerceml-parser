@@ -1,5 +1,3 @@
-import {DateTime} from 'luxon';
-
 /**
  * CommerceML 2.10.
  * 1.1.50 Группа.
@@ -458,7 +456,7 @@ export interface PersonInfo {
    *
    * Дата рождения.
    */
-  birthday?: DateTime;
+  birthday?: Date;
 
   /**
    * Элемент: МестоРождения
@@ -541,7 +539,7 @@ export interface IdentityDocument {
    *
    * Когда выдан.
    */
-  issueDate: DateTime;
+  issueDate: Date;
 
   /**
    * Элемент: КемВыдан
@@ -818,7 +816,7 @@ export interface CompanyInfo {
    *
    * Дата регистрации организации.
    */
-  registrationDate?: DateTime;
+  registrationDate?: Date;
 
   /**
    * Элемент: ЮридическийАдрес
@@ -2141,7 +2139,7 @@ export interface OffersPackage {
    *
    * Дата (включительно), с которой начинает действовать предложение.
    */
-  validFrom?: DateTime;
+  validFrom?: Date;
 
   /**
    * Элемент: ДействительноДо
@@ -2150,7 +2148,7 @@ export interface OffersPackage {
    *
    * Дата (включительно), с которой заканчивает действовать предложение.
    */
-  validUntil?: DateTime;
+  validUntil?: Date;
 
   /**
    * Элемент: Описание
@@ -2480,7 +2478,7 @@ export interface ChildDocument {
    *
    * Дата документа.
    */
-  date: DateTime;
+  date: Date;
 
   /**
    * Элемент: ХозОперация
@@ -2536,7 +2534,7 @@ export interface ChildDocument {
    *
    * Время документа.
    */
-  time?: DateTime;
+  time?: Date;
 
   /**
    * Элемент: СрокПлатежа
@@ -2545,7 +2543,7 @@ export interface ChildDocument {
    *
    * Срок платежа.
    */
-  paymentTerm?: DateTime;
+  paymentTerm?: Date;
 
   /**
    * Элемент: Комментарий
@@ -2666,7 +2664,7 @@ export interface Document {
    *
    * Дата документа
    */
-  date: DateTime;
+  date: Date;
 
   /**
    * Элемент: ХозОперация
@@ -2732,7 +2730,7 @@ export interface Document {
    *
    * Время документа.
    */
-  time?: DateTime;
+  time?: Date;
 
   /**
    * Элемент: СрокПлатежа
@@ -2741,7 +2739,7 @@ export interface Document {
    *
    * Срок платежа.
    */
-  paymentTerm?: DateTime;
+  paymentTerm?: Date;
 
   /**
    * Элемент: Комментарий
@@ -2852,7 +2850,7 @@ export interface CommercialInformation {
    *
    * Дата формирования ЭД
    */
-  creationTimestamp: DateTime;
+  creationTimestamp: Date;
 
   /**
    * Элемент: Классификатор
