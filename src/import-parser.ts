@@ -137,7 +137,7 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
           fullName: productXml.БазоваяЕдиница._НаименованиеПолное,
           acronym: productXml.БазоваяЕдиница._МеждународноеСокращение
         },
-        group: productXml.Группы.Ид,
+        groupId: productXml.Группы.Ид,
         description: productXml.Описание
       };
 

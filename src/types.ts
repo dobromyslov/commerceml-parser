@@ -1708,7 +1708,7 @@ export interface Product {
    *   <Ид>2e13116a-1f33-11e7-80c2-0cc47ab29cd1</Ид>
    * </Группы>
    */
-  group?: string;
+  groupId?: string;
 
   /**
    * Элемент: ЗначенияСвойств
