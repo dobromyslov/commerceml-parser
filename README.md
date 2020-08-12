@@ -66,7 +66,7 @@ createReadStream('./data/import0_1_with_nested_groups.xml').pipe(parserStream);
 
 ## Tanks to
 
-@kirill-zhirnov for his commerceml-js parser written in CoffeScript.
+@kirill-zhirnov for his commerceml-js parser written in CoffeeScript.
 
 ## License
 
