@@ -64,7 +64,7 @@ parserStream.on('end', _ => {
 createReadStream('./data/import0_1_with_nested_groups.xml').pipe(parserStream);
 ``` 
 
-## Tanks to
+## Thanks to
 
 @kirill-zhirnov for his commerceml-js parser written in CoffeeScript.
 
