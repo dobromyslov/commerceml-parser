@@ -19,17 +19,19 @@ export abstract class CommerceMlAbstractParser {
   protected stream: SAXStream;
 
   /**
-   *
+   * Current position in the xml file.
+   * Array of tag names.
    */
-  protected position: string[] = [];
+  protected xPath: string[] = [];
 
   /**
-   *
+   * Current open tag name.
+   * Last tag name in xPath array.
    */
   protected openTag = '';
 
   /**
-   *
+   * Current parser rule key which is processed.
    */
   protected currentRuleKey = '';
 
@@ -101,18 +103,20 @@ export abstract class CommerceMlAbstractParser {
    * @param tag
    */
   protected onOpenTag(tag: Tag | QualifiedTag) {
-    this.position.push(tag.name);
     this.openTag = tag.name;
+    this.xPath.push(tag.name);
     this.collectCurrentNode = false;
 
     const collectRules = this.getCollectRules();
-    for (const [key, props] of Object.entries(collectRules)) {
-      if (this.isPositionEq(props.start)) {
-        // Start collect
+    for (const [key, rule] of Object.entries(collectRules)) {
+      // Check new rule start path
+      if (this.isCurrentXPathEqualsToRuleXPath(rule.start)) {
+        // If currentRule key already set then finish previous XML collection
         if (this.currentRuleKey) {
           this.emitCollected();
         }
 
+        // Start new XML collection
         this.currentRuleKey = key;
       }
     }
@@ -136,12 +140,12 @@ export abstract class CommerceMlAbstractParser {
    */
   protected shallCollect(): boolean {
     for (const rule of Object.values(this.getCollectRules())) {
-      if (this.isPositionEq(rule.start)) {
+      if (this.isCurrentXPathEqualsToRuleXPath(rule.start)) {
         return true;
       }
 
-      for (const position of rule.include ?? []) {
-        if (this.isPositionEq(position, 'begin')) {
+      for (const ruleInclude of rule.include ?? []) {
+        if (this.isCurrentXPathStartsWithRuleXPath(ruleInclude)) {
           return true;
         }
       }
@@ -178,43 +182,22 @@ export abstract class CommerceMlAbstractParser {
         this.collectOpenTags.pop();
       }
 
-      if (this.isPositionEq(this.getCollectRules()[this.currentRuleKey].start)) {
+      if (this.isCurrentXPathEqualsToRuleXPath(this.getCollectRules()[this.currentRuleKey].start)) {
         this.emitCollected();
       }
     }
 
-    this.position.pop();
-
     this.collectCurrentNode = false;
     this.openTag = '';
+    this.xPath.pop();
   }
 
-  protected isPositionEq(position: string[], mode: 'eq' | 'begin' = 'eq'): boolean {
-    switch (mode) {
-      case 'eq':
-        if (position.length !== this.position.length) {
-          return false;
-        }
+  protected isCurrentXPathEqualsToRuleXPath(xPath: string[]): boolean {
+    return this.xPath.length === xPath.length && this.xPath.join('/') === xPath.join('/');
+  }
 
-        break;
-
-      case 'begin':
-        if (position.length > this.position.length) {
-          return false;
-        }
-
-        break;
-
-      default:
-    }
-
-    for (const [i, item] of position.entries()) {
-      if (item !== this.position[i]) {
-        return false;
-      }
-    }
-
-    return true;
+  protected isCurrentXPathStartsWithRuleXPath(xPath: string[]): boolean {
+    return this.xPath.length >= xPath.length && this.xPath.join('/').startsWith(xPath.join('/'));
   }
 
   protected abstract getCollectRules(): CommerceMlCollectRules;
