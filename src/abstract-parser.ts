@@ -3,16 +3,20 @@ import {encodeXML} from 'entities/lib';
 import X2JS from 'x2js';
 import {Readable} from 'stream';
 
-export class CommerceMlCollectRule {
-  start: string[] = [];
-  include?: string[][] = [];
+export interface CommerceMlCollectRule {
+  start: string[];
+  include?: string[][];
+}
+
+export interface CommerceMlCollectRules {
+  [key: string]: CommerceMlCollectRule;
 }
 
 export abstract class CommerceMlAbstractParser {
   /**
    * SAX Parser instance.
    */
-  protected parser: SAXStream;
+  protected stream: SAXStream;
 
   /**
    *
@@ -27,7 +31,7 @@ export abstract class CommerceMlAbstractParser {
   /**
    *
    */
-  protected collect = '';
+  protected currentRuleKey = '';
 
   /**
    *
@@ -45,20 +49,20 @@ export abstract class CommerceMlAbstractParser {
   protected collectOpenTags: string[] = [];
 
   constructor() {
-    this.parser = createStream(true, {
+    this.stream = createStream(true, {
       trim: true,
       normalize: true
     });
 
-    this.parser.on('opentag', (tag: Tag | QualifiedTag) => {
+    this.stream.on('opentag', (tag: Tag | QualifiedTag) => {
       this.onOpenTag(tag);
     });
 
-    this.parser.on('closetag', (tagName: string) => {
+    this.stream.on('closetag', (tagName: string) => {
       this.onCloseTag(tagName);
     });
 
-    this.parser.on('text', (text: string) => {
+    this.stream.on('text', (text: string) => {
       this.onText(text);
     });
   }
@@ -69,15 +73,15 @@ export abstract class CommerceMlAbstractParser {
    */
   public async parse(readStream: Readable): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.parser.on('end', () => {
+      this.stream.on('end', () => {
         resolve();
       });
 
-      this.parser.on('error', error => {
+      this.stream.on('error', error => {
         reject(error);
       });
 
-      readStream.pipe(this.parser);
+      readStream.pipe(this.stream);
     });
   }
 
@@ -85,11 +89,11 @@ export abstract class CommerceMlAbstractParser {
    * Returns SAX stream.
    */
   public getStream(): SAXStream {
-    return this.parser;
+    return this.stream;
   }
 
-  public destroy(): void {
-    this.parser.destroy();
+  public end(): void {
+    this.stream.end();
   }
 
   /**
@@ -97,26 +101,28 @@ export abstract class CommerceMlAbstractParser {
    * @param tag
    */
   protected onOpenTag(tag: Tag | QualifiedTag) {
-    const nodeName = tag.name;
-    const nodeAttrs = tag.attributes;
-
-    this.position.push(nodeName);
-    this.openTag = nodeName;
+    this.position.push(tag.name);
+    this.openTag = tag.name;
     this.collectCurrentNode = false;
 
     const collectRules = this.getCollectRules();
     for (const [key, props] of Object.entries(collectRules)) {
       if (this.isPositionEq(props.start)) {
-        this.startCollect(key);
+        // Start collect
+        if (this.currentRuleKey) {
+          this.emitCollected();
+        }
+
+        this.currentRuleKey = key;
       }
     }
 
-    if (this.collect && this.shallCollect()) {
+    if (this.currentRuleKey && this.shallCollect()) {
       this.collectCurrentNode = true;
-      this.xml += `<${nodeName}`;
-      this.collectOpenTags.push(nodeName);
+      this.xml += `<${tag.name}`;
+      this.collectOpenTags.push(tag.name);
 
-      for (const [key, value] of Object.entries(nodeAttrs)) {
+      for (const [key, value] of Object.entries(tag.attributes)) {
         this.xml += ` ${key}="${value as string}"`;
       }
     }
@@ -144,14 +150,6 @@ export abstract class CommerceMlAbstractParser {
     return false;
   }
 
-  protected startCollect(key: string) {
-    if (this.collect) {
-      this.emitCollected();
-    }
-
-    this.collect = key;
-  }
-
   protected emitCollected(): void {
     if (this.collectOpenTags.length > 0) {
       for (let i = this.collectOpenTags.length - 1; i >= 0; i--) {
@@ -160,10 +158,10 @@ export abstract class CommerceMlAbstractParser {
     }
 
     const x2js = new X2JS();
-    this.parser?.emit(this.collect, x2js.xml2js(this.xml));
+    this.stream?.emit(this.currentRuleKey, x2js.xml2js(this.xml));
 
     this.collectOpenTags = [];
-    this.collect = '';
+    this.currentRuleKey = '';
     this.xml = '';
   }
 
@@ -173,26 +171,22 @@ export abstract class CommerceMlAbstractParser {
     }
   }
 
-  protected onCloseTag(nodeName: string) {
-    if (this.collect) {
+  protected onCloseTag(tagName: string) {
+    if (this.currentRuleKey) {
       if (this.shallCollect()) {
-        this.xml += `</${nodeName}>`;
-        this.reduceLastPosition(this.collectOpenTags);
+        this.xml += `</${tagName}>`;
+        this.collectOpenTags.pop();
       }
 
-      if (this.isPositionEq(this.getCollectRules()[this.collect].start)) {
+      if (this.isPositionEq(this.getCollectRules()[this.currentRuleKey].start)) {
         this.emitCollected();
       }
     }
 
-    this.reduceLastPosition(this.position);
+    this.position.pop();
 
     this.collectCurrentNode = false;
     this.openTag = '';
-  }
-
-  protected reduceLastPosition(position: string[]): void {
-    position.splice(-1, 1);
   }
 
   protected isPositionEq(position: string[], mode: 'eq' | 'begin' = 'eq'): boolean {
@@ -223,5 +217,5 @@ export abstract class CommerceMlAbstractParser {
     return true;
   }
 
-  protected abstract getCollectRules(): {[key: string]: CommerceMlCollectRule};
+  protected abstract getCollectRules(): CommerceMlCollectRules;
 }

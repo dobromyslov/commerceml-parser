@@ -1,4 +1,4 @@
-import {CommerceMlAbstractParser, CommerceMlCollectRule} from './abstract-parser';
+import {CommerceMlAbstractParser, CommerceMlCollectRules} from './abstract-parser';
 import {CommercialInformation, Document} from './types';
 
 export class OrdersParser extends CommerceMlAbstractParser {
@@ -7,7 +7,7 @@ export class OrdersParser extends CommerceMlAbstractParser {
    * @param callback
    */
   public onCommercialInformation(callback: (commercialInformation: CommercialInformation) => void): void {
-    this.parser.on('commercialInformation', (data: any) => {
+    this.stream.on('commercialInformation', (data: any) => {
       const commercialInformation: CommercialInformation = {
         schemaVersion: data.КоммерческаяИнформация._ВерсияСхемы,
         creationTimestamp: new Date(data.КоммерческаяИнформация._ДатаФормирования)
@@ -22,7 +22,7 @@ export class OrdersParser extends CommerceMlAbstractParser {
    * @param callback
    */
   public onDocument(callback: (document: Document) => void): void {
-    this.parser.on('document', (data: any) => {
+    this.stream.on('document', (data: any) => {
       const documentXml = data.Документ;
       const document: Document = {
         id: documentXml.Ид,
@@ -39,7 +39,7 @@ export class OrdersParser extends CommerceMlAbstractParser {
     });
   }
 
-  protected getCollectRules(): {[key: string]: CommerceMlCollectRule} {
+  protected getCollectRules(): CommerceMlCollectRules {
     return {
       commercialInformation: {
         start: ['КоммерческаяИнформация']

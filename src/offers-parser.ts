@@ -1,4 +1,4 @@
-import {CommerceMlAbstractParser, CommerceMlCollectRule} from './abstract-parser';
+import {CommerceMlAbstractParser, CommerceMlCollectRules} from './abstract-parser';
 import {
   Classifier,
   CommercialInformation,
@@ -15,7 +15,7 @@ export class CommerceMlOffersParser extends CommerceMlAbstractParser {
    * @param callback
    */
   public onCommercialInformation(callback: (commercialInformation: CommercialInformation) => void): void {
-    this.parser.on('commercialInformation', (data: any) => {
+    this.stream.on('commercialInformation', (data: any) => {
       const commercialInformation: CommercialInformation = {
         schemaVersion: data.КоммерческаяИнформация._ВерсияСхемы,
         creationTimestamp: new Date(data.КоммерческаяИнформация._ДатаФормирования)
@@ -30,7 +30,7 @@ export class CommerceMlOffersParser extends CommerceMlAbstractParser {
    * @param callback
    */
   public onClassifier(callback: (classifier: Classifier) => void): void {
-    this.parser.on('classifier', (data: any) => {
+    this.stream.on('classifier', (data: any) => {
       const classifierXml = data.Классификатор;
       const classifier: Classifier = {
         id: classifierXml.Ид,
@@ -43,7 +43,7 @@ export class CommerceMlOffersParser extends CommerceMlAbstractParser {
   }
 
   public onOffersPackage(callback: (offersPackage: OffersPackage) => void): void {
-    this.parser.on('offersPackage', (data: any) => {
+    this.stream.on('offersPackage', (data: any) => {
       const offersPackageXml = data.ПакетПредложений;
       const offersPackage: OffersPackage = {
         changesOnly: offersPackageXml._СодержитТолькоИзменения,
@@ -79,7 +79,7 @@ export class CommerceMlOffersParser extends CommerceMlAbstractParser {
   }
 
   public onWarehouse(callback: (warehouse: Warehouse) => void): void {
-    this.parser.on('warehouse', (data: any) => {
+    this.stream.on('warehouse', (data: any) => {
       const warehouseXml = data.Склад;
       const warehouse: Warehouse = {
         id: warehouseXml.Ид,
@@ -91,7 +91,7 @@ export class CommerceMlOffersParser extends CommerceMlAbstractParser {
   }
 
   public onOffer(callback: (offer: Offer) => void): void {
-    this.parser.on('offer', (data: any) => {
+    this.stream.on('offer', (data: any) => {
       const offerXml = data.Предложение;
       const offer: Offer = {
         id: offerXml.Ид,
@@ -163,7 +163,7 @@ export class CommerceMlOffersParser extends CommerceMlAbstractParser {
   /**
    * Parser Rules.
    */
-  protected getCollectRules(): {[key: string]: CommerceMlCollectRule} {
+  protected getCollectRules(): CommerceMlCollectRules {
     return {
       commercialInformation: {
         start: ['КоммерческаяИнформация']

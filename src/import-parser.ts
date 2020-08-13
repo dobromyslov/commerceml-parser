@@ -1,12 +1,15 @@
-import {CommerceMlAbstractParser, CommerceMlCollectRule} from './abstract-parser';
+import {CommerceMlAbstractParser, CommerceMlCollectRules} from './abstract-parser';
 import {
   Catalog,
   Classifier,
   ClassifierGroup,
   ClassifierProperty,
   CommercialInformation,
-  Counterparty, DictionaryValue, Product,
-  PropertyValue, RequisiteValue
+  Counterparty,
+  DictionaryValue,
+  Product,
+  PropertyValue,
+  RequisiteValue
 } from './types';
 
 export class CommerceMlImportParser extends CommerceMlAbstractParser {
@@ -15,7 +18,7 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
    * @param callback
    */
   public onCommercialInformation(callback: (commercialInformation: CommercialInformation) => void): void {
-    this.parser.on('commercialInformation', (data: any) => {
+    this.stream.on('commercialInformation', (data: any) => {
       const commercialInformation: CommercialInformation = {
         schemaVersion: data.КоммерческаяИнформация._ВерсияСхемы,
         creationTimestamp: new Date(data.КоммерческаяИнформация._ДатаФормирования)
@@ -30,7 +33,7 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
    * @param callback
    */
   public onClassifier(callback: (classifier: Classifier) => void): void {
-    this.parser.on('classifier', (data: any) => {
+    this.stream.on('classifier', (data: any) => {
       const classifierXml = data.Классификатор;
       const classifier: Classifier = {
         id: classifierXml.Ид,
@@ -67,7 +70,7 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
       return result;
     };
 
-    this.parser.on('classifierGroup', (data: any) => {
+    this.stream.on('classifierGroup', (data: any) => {
       const classifierGroupXml = data.Группа;
       const classifierGroup: ClassifierGroup = processGroup(classifierGroupXml);
       callback(classifierGroup);
@@ -79,7 +82,7 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
    * @param callback
    */
   public onClassifierProperty(callback: (classifierProperty: ClassifierProperty) => void): void {
-    this.parser.on('classifierProperty', (data: any) => {
+    this.stream.on('classifierProperty', (data: any) => {
       const propertyXml = data.Свойство;
 
       const classifierProperty: ClassifierProperty = {
@@ -107,7 +110,7 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
    * @param callback
    */
   public onCatalog(callback: (catalog: Catalog) => void) {
-    this.parser.on('catalog', (data: any) => {
+    this.stream.on('catalog', (data: any) => {
       const catalogXml = data.Каталог;
       const catalog: Catalog = {
         id: catalogXml.Ид,
@@ -126,7 +129,7 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
    * @param callback
    */
   public onProduct(callback: (product: Product) => void) {
-    this.parser.on('product', (data: any) => {
+    this.stream.on('product', (data: any) => {
       const productXml = data.Товар;
       const product: Product = {
         id: productXml.Ид,
@@ -237,7 +240,7 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
   /**
    * Parser rules.
    */
-  protected getCollectRules(): {[key: string]: CommerceMlCollectRule} {
+  protected getCollectRules(): CommerceMlCollectRules {
     return {
       commercialInformation: {
         start: ['КоммерческаяИнформация']
