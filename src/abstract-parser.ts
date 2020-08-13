@@ -48,7 +48,7 @@ export abstract class CommerceMlAbstractParser {
   /**
    *
    */
-  protected collectOpenTags: string[] = [];
+  protected openTags: string[] = [];
 
   protected abstract rules: CommerceMlRules;
 
@@ -125,7 +125,7 @@ export abstract class CommerceMlAbstractParser {
     if (this.currentRuleKey && this.shallCollect()) {
       this.collectCurrentNode = true;
       this.xml += `<${tag.name}`;
-      this.collectOpenTags.push(tag.name);
+      this.openTags.push(tag.name);
 
       for (const [key, value] of Object.entries(tag.attributes)) {
         this.xml += ` ${key}="${value as string}"`;
@@ -156,16 +156,18 @@ export abstract class CommerceMlAbstractParser {
   }
 
   protected emitCollected(): void {
-    if (this.collectOpenTags.length > 0) {
-      for (let i = this.collectOpenTags.length - 1; i >= 0; i--) {
-        this.xml += `</${this.collectOpenTags[i]}>`;
+    // Close all opened tags
+    if (this.openTags.length > 0) {
+      for (const tagName of this.openTags.reverse()) {
+        this.xml += `</${tagName}>`;
       }
+
+      this.openTags = [];
     }
 
     const x2js = new X2JS();
     this.stream?.emit(this.currentRuleKey, x2js.xml2js(this.xml));
 
-    this.collectOpenTags = [];
     this.currentRuleKey = '';
     this.xml = '';
   }
@@ -180,7 +182,7 @@ export abstract class CommerceMlAbstractParser {
     if (this.currentRuleKey) {
       if (this.shallCollect()) {
         this.xml += `</${tagName}>`;
-        this.collectOpenTags.pop();
+        this.openTags.pop();
       }
 
       if (this.isCurrentXPathEqualsToRuleXPath(this.rules[this.currentRuleKey].start)) {
