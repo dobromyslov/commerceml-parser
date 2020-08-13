@@ -60,6 +60,22 @@ catalogImportParser.onClassifierGroup(classifierGroup => {
 await catalogImportParser.parse(createReadStream('./data/import0_1_with_nested_groups.xml'));
 ``` 
 
+## CommerceML Standard Documentation
+
+v2.10
+* [CommerceML 2.10.2 PDF](doc/commerceml-2.10.2.pdf)
+* [CommerceML 2.10 XSD](doc/commerceml-2.10.xsd)
+
+v2.08
+* [CommerceML 2.08 PDF](doc/commerceml-2.08.pdf)
+* [CommerceML 2.08 XSD](doc/commerceml-2.08.xsd)
+
+## Sample Data
+
+* [import0_1.xml](data/import0_1.xml)
+* [import0_1_with_nested_groups.xml](data/import0_1_with_nested_groups.xml)
+* [offers0_1.xml](data/offers0_1.xml)
+
 ## Thanks to
 
 @kirill-zhirnov for his commerceml-js parser written in CoffeeScript.
