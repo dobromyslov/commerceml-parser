@@ -1,7 +1,22 @@
-import {CommerceMlAbstractParser, CommerceMlCollectRules} from './abstract-parser';
+import {CommerceMlAbstractParser} from './abstract-parser';
 import {CommercialInformation, Document} from './types';
 
 export class OrdersParser extends CommerceMlAbstractParser {
+  /**
+   * Parser rules.
+   */
+  protected rules ={
+    commercialInformation: {
+      start: ['КоммерческаяИнформация']
+    },
+    document: {
+      start: ['КоммерческаяИнформация', 'Документ'],
+      include: [
+        ['КоммерческаяИнформация', 'Документ']
+      ]
+    }
+  };
+
   /**
    * Parses commercial information schemaVersion and creationTimestamp attributes.
    * @param callback
@@ -37,19 +52,5 @@ export class OrdersParser extends CommerceMlAbstractParser {
 
       callback(document);
     });
-  }
-
-  protected getCollectRules(): CommerceMlCollectRules {
-    return {
-      commercialInformation: {
-        start: ['КоммерческаяИнформация']
-      },
-      document: {
-        start: ['КоммерческаяИнформация', 'Документ'],
-        include: [
-          ['КоммерческаяИнформация', 'Документ']
-        ]
-      }
-    };
   }
 }

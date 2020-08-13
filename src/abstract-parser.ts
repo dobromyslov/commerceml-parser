@@ -3,13 +3,13 @@ import {encodeXML} from 'entities/lib';
 import X2JS from 'x2js';
 import {Readable} from 'stream';
 
-export interface CommerceMlCollectRule {
+export interface CommerceMlRule {
   start: string[];
   include?: string[][];
 }
 
-export interface CommerceMlCollectRules {
-  [key: string]: CommerceMlCollectRule;
+export interface CommerceMlRules {
+  [key: string]: CommerceMlRule;
 }
 
 export abstract class CommerceMlAbstractParser {
@@ -49,6 +49,8 @@ export abstract class CommerceMlAbstractParser {
    *
    */
   protected collectOpenTags: string[] = [];
+
+  protected abstract rules: CommerceMlRules;
 
   constructor() {
     this.stream = createStream(true, {
@@ -107,8 +109,7 @@ export abstract class CommerceMlAbstractParser {
     this.xPath.push(tag.name);
     this.collectCurrentNode = false;
 
-    const collectRules = this.getCollectRules();
-    for (const [key, rule] of Object.entries(collectRules)) {
+    for (const [key, rule] of Object.entries(this.rules)) {
       // Check new rule start path
       if (this.isCurrentXPathEqualsToRuleXPath(rule.start)) {
         // If currentRule key already set then finish previous XML collection
@@ -139,7 +140,7 @@ export abstract class CommerceMlAbstractParser {
    *
    */
   protected shallCollect(): boolean {
-    for (const rule of Object.values(this.getCollectRules())) {
+    for (const rule of Object.values(this.rules)) {
       if (this.isCurrentXPathEqualsToRuleXPath(rule.start)) {
         return true;
       }
@@ -182,7 +183,7 @@ export abstract class CommerceMlAbstractParser {
         this.collectOpenTags.pop();
       }
 
-      if (this.isCurrentXPathEqualsToRuleXPath(this.getCollectRules()[this.currentRuleKey].start)) {
+      if (this.isCurrentXPathEqualsToRuleXPath(this.rules[this.currentRuleKey].start)) {
         this.emitCollected();
       }
     }
@@ -199,6 +200,4 @@ export abstract class CommerceMlAbstractParser {
   protected isCurrentXPathStartsWithRuleXPath(xPath: string[]): boolean {
     return this.xPath.length >= xPath.length && this.xPath.join('/').startsWith(xPath.join('/'));
   }
-
-  protected abstract getCollectRules(): CommerceMlCollectRules;
 }
