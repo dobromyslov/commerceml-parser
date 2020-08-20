@@ -188,6 +188,17 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
         description: productXml.Описание
       };
 
+      if (productXml.Картинка) {
+        if (Array.isArray(productXml.Картинка)) {
+          product.images = [];
+          for (const imagePath of productXml.Картинка) {
+            product.images.push(imagePath);
+          }
+        } else {
+          product.images = [productXml.Картинка];
+        }
+      }
+
       if (productXml.СтавкиНалогов?.СтавкаНалога) {
         if (Array.isArray(productXml.СтавкиНалогов?.СтавкаНалога)) {
           product.taxRates = [];
