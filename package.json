@@ -26,7 +26,7 @@
   "scripts": {
     "example": "jest",
     "test": "xo && jest",
-    "release": "npm build && np --no-2fa",
+    "release": "npm run build && np --no-2fa",
     "build": "del-cli dist && tsc"
   },
   "xo": {
