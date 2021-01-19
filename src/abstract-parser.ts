@@ -8,9 +8,7 @@ export interface CommerceMlRule {
   include?: string[][];
 }
 
-export interface CommerceMlRules {
-  [key: string]: CommerceMlRule;
-}
+export interface CommerceMlRules extends Record<string, CommerceMlRule> {}
 
 export abstract class CommerceMlAbstractParser {
   /**

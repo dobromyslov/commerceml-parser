@@ -202,7 +202,7 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
       if (productXml.СтавкиНалогов?.СтавкаНалога) {
         if (Array.isArray(productXml.СтавкиНалогов?.СтавкаНалога)) {
           product.taxRates = [];
-          for (const taxRateXml of productXml.СтавкиНалогов?.СтавкаНалога) {
+          for (const taxRateXml of productXml.СтавкиНалогов?.СтавкаНалога ?? []) {
             product.taxRates.push({
               name: taxRateXml.Наименование,
               rate: taxRateXml.Ставка

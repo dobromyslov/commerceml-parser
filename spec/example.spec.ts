@@ -1,5 +1,5 @@
-import {CommerceMlImportParser} from '../src/import-parser';
-import {createReadStream} from "fs";
+import { CommerceMlImportParser } from '../src';
+import { createReadStream } from "fs";
 
 describe('CommerceMlParser', () => {
   it('is ok', async () => {

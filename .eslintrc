@@ -1,0 +1,10 @@
+{
+  "extends": [
+    "xo/esnext",
+    "xo-typescript",
+    "xo-typescript/space"
+  ],
+  "rules": {
+    "indent": "off"
+  }
+}

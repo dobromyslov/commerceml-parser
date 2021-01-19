@@ -14,22 +14,25 @@ Standard description: https://v8.1c.ru/tekhnologii/obmen-dannymi-i-integratsiya/
 * SAX XML parser suitable for large files
 * NodeJS
 * TypeScript
-* [xojs/xo](https://github.com/xojs/xo) with plugins for TypeScript - linting in CLI
+* [xojs/xo](https://github.com/xojs/xo) with plugins for TypeScript - linting
 * [ESLint](https://github.com/eslint/eslint) - linting in the WebStorm with [ESLint plugin](https://plugins.jetbrains.com/plugin/7494-eslint)
-* [jasmine](https://github.com/jasmine/jasmine) - Testing
-* [nyc](https://github.com/istanbuljs/nyc) - Code Coverage
+* [ts-jest](https://github.com/kulshekhar/ts-jest) - Testing & Coverage
 
 ## Installation
 
 ```
 npm install --save commerceml-parser
 ```
+or
+```
+yarn add commerceml-parser
+```
 
 ## Usage
 
 Have a look at usage examples in tests `/spec/example.spec.ts`.
 
-Run example: `npm run example`
+Run example: `npm run example` or `yarn example`
 
 Here is a common usage example:
 
