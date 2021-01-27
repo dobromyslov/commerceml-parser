@@ -28,7 +28,7 @@ or
 yarn add commerceml-parser
 ```
 
-Note: Interfaces for browsers extracted into `commerceml-parser-core` package. 
+Note: Interfaces for browsers were extracted into `commerceml-parser-core` package. 
 Install it with `npm install commerceml-parser-core --save-dev` or `yarn add commerceml-parser-core --dev`
 
 ## Usage
