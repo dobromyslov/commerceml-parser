@@ -1,5 +1,5 @@
 import {CommerceMlAbstractParser} from './abstract-parser';
-import {CommercialInformation, Document} from './types';
+import {CommercialInformation, Document} from 'commerceml-parser-core';
 
 export class OrdersParser extends CommerceMlAbstractParser {
   /**

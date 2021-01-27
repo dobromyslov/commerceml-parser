@@ -7,7 +7,7 @@ import {
   OffersPackage,
   PriceType,
   Warehouse
-} from './types';
+} from 'commerceml-parser-core';
 
 export class CommerceMlOffersParser extends CommerceMlAbstractParser {
   /**

@@ -10,7 +10,7 @@ import {
   Product,
   PropertyValue,
   RequisiteValue
-} from './types';
+} from 'commerceml-parser-core';
 
 export class CommerceMlImportParser extends CommerceMlAbstractParser {
   /**

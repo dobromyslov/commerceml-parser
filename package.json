@@ -45,6 +45,7 @@
     }
   },
   "dependencies": {
+    "commerceml-parser-core": "^2.1.0",
     "entities": "^2.1.0",
     "sax": "^1.2.4",
     "x2js": "^3.4.0"
