@@ -69,6 +69,10 @@ export abstract class CommerceMlAbstractParser {
     });
   }
 
+  public onEnd(callback: () => void) {
+    this.stream.on('end', callback);
+  }
+
   /**
    * Starts parsing readable stream.
    * @param readStream
