@@ -141,7 +141,6 @@ export class CommerceMlOffersParser extends CommerceMlAbstractParser {
       const offerXml = data.Предложение;
       const offer: Offer = {
         id: offerXml.Ид,
-        article: offerXml.Артикул,
         name: offerXml.Наименование,
         baseMeasurementUnit: {
           code: offerXml.БазоваяЕдиница._Код,
@@ -150,6 +149,10 @@ export class CommerceMlOffersParser extends CommerceMlAbstractParser {
         },
         quantity: offerXml.Количество
       };
+
+      if (offerXml.Артикул) {
+        offer.article = offerXml.Артикул;
+      }
 
       offer.prices = [];
       for (const priceXml of convertToArray(offerXml.Цены?.Цена)) {

@@ -184,16 +184,25 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
       const productXml = data.Товар;
       const product: Product = {
         id: productXml.Ид,
-        article: productXml.Артикул,
         name: productXml.Наименование,
         baseMeasurementUnit: {
           code: productXml.БазоваяЕдиница._Код,
           fullName: productXml.БазоваяЕдиница._НаименованиеПолное,
           acronym: productXml.БазоваяЕдиница._МеждународноеСокращение
-        },
-        groupId: productXml.Группы.Ид,
-        description: productXml.Описание
+        }
       };
+
+      if (productXml.Артикул) {
+        product.article = productXml.Артикул;
+      }
+
+      if (productXml.Группы?.Ид) {
+        product.groupId = productXml.Группы.Ид;
+      }
+
+      if (productXml.Описание) {
+        product.description = productXml.Описание
+      }
 
       if (productXml.Картинка) {
         product.images = [];
