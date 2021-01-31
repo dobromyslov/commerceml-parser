@@ -1,6 +1,6 @@
 {
   "name": "commerceml-parser",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Parser for CommerceML standard developed by 1c.ru",
   "license": "MIT",
   "repository": {
