@@ -1,6 +1,6 @@
 import {encodeXML} from 'entities/lib';
 import X2JS from 'x2js';
-import {SaxesParser, SaxesTagPlain} from 'saxes';
+import {CommonOptions, SaxesParser, SaxesTag} from 'saxes';
 import Emittery from 'emittery';
 import {Readable} from 'stream';
 
@@ -16,7 +16,7 @@ export interface CommerceMlRules extends Record<string, CommerceMlRule> {}
  */
 export interface SaxesEvent {
   type: 'opentag' | 'text' | 'closetag' | 'end';
-  tag?: SaxesTagPlain;
+  tag?: SaxesTag;
   text?: string;
 }
 
@@ -114,23 +114,14 @@ export abstract class CommerceMlAbstractParser {
           case 'end':
             this.events.push({type: 'end'});
             break;
+
+          default:
+            this.events.push({type: saxesEvent.type, data: saxesEvent.tag ?? saxesEvent.text});
         }
       }
 
       await this.processParserEvents(this.events);
       this.events = [];
-    }
-  }
-
-  /**
-   * Processes parser events.
-   * @param events Collected parser events during one XML chunk parsing.
-   * @protected
-   */
-  protected async processParserEvents(events: ParserEvent[]): Promise<void> {
-    // TODO: decide which API to use: an event emitter or a plain synchronous functions
-    for (const event of events ?? []) {
-      await this.eventEmitter.emitSerial(event.type, event.data);
     }
   }
 
@@ -148,9 +139,9 @@ export abstract class CommerceMlAbstractParser {
    * @returns Array of SaxesParser events
    * @throws Error if a SaxesParser error event was emitted.
    */
-  public async *parseChunk(iterable: Iterable<string>): AsyncGenerator<SaxesEvent[], void, undefined> {
-    const saxesParser = new SaxesParser<{}>();
-    let error;
+  public async * parseChunk(iterable: Iterable<string>): AsyncGenerator<SaxesEvent[], void, undefined> {
+    const saxesParser = new SaxesParser<CommonOptions>();
+    let error: Error | undefined;
     saxesParser.on('error', _error => {
       error = _error;
     });
@@ -180,7 +171,7 @@ export abstract class CommerceMlAbstractParser {
     });
 
     for await (const chunk of iterable) {
-      saxesParser.write(chunk as string);
+      saxesParser.write(chunk);
       if (error) {
         throw error;
       }
@@ -195,10 +186,23 @@ export abstract class CommerceMlAbstractParser {
   }
 
   /**
+   * Processes parser events.
+   * @param events Collected parser events during one XML chunk parsing.
+   * @protected
+   */
+  protected async processParserEvents(events: ParserEvent[]): Promise<void> {
+    // Serial events emission
+    for (const event of events ?? []) {
+      // eslint-disable-next-line no-await-in-loop
+      await this.eventEmitter.emitSerial(event.type, event.data);
+    }
+  }
+
+  /**
    * SAX 'opentag' event handler.
    * @param tag
    */
-  protected onOpenTag(tag: SaxesTagPlain): void {
+  protected onOpenTag(tag: SaxesTag): void {
     this.openTag = tag.name;
     this.xPath.push(tag.name);
     this.collectCurrentNode = false;
@@ -274,7 +278,7 @@ export abstract class CommerceMlAbstractParser {
     }
   }
 
-  protected onCloseTag(tag: SaxesTagPlain): void {
+  protected onCloseTag(tag: SaxesTag): void {
     if (this.currentRuleKey) {
       if (this.shallCollect()) {
         this.xml += `</${tag.name}>`;
