@@ -147,7 +147,6 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
         });
       }
 
-
       await callback(classifierProperty);
     });
   }
