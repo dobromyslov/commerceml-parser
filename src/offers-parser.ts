@@ -2,13 +2,12 @@ import {CommerceMlAbstractParser} from './abstract-parser';
 import {
   Classifier,
   CommercialInformation,
-  Counterparty,
   Offer,
   OffersPackage,
   PriceType,
   Warehouse
 } from 'commerceml-parser-core';
-import {convertToArray} from './utils';
+import {convertToArray, parseCounterpartyXmlData} from './utils';
 
 export class CommerceMlOffersParser extends CommerceMlAbstractParser {
   /**
@@ -82,7 +81,7 @@ export class CommerceMlOffersParser extends CommerceMlAbstractParser {
       const classifier: Classifier = {
         id: classifierXml.Ид,
         name: classifierXml.Наименование,
-        owner: this.parseCounterpartyXmlData(classifierXml.Владелец)
+        owner: parseCounterpartyXmlData(classifierXml.Владелец)
       };
 
       await callback(classifier);
@@ -98,7 +97,7 @@ export class CommerceMlOffersParser extends CommerceMlAbstractParser {
         name: offersPackageXml.Наименование,
         catalogId: offersPackageXml.ИдКаталога,
         classifierId: offersPackageXml.ИдКлассификатора,
-        owner: this.parseCounterpartyXmlData(offersPackageXml.Владелец),
+        owner: parseCounterpartyXmlData(offersPackageXml.Владелец),
         offers: [],
         priceTypes: []
       };
@@ -174,32 +173,5 @@ export class CommerceMlOffersParser extends CommerceMlAbstractParser {
 
       await callback(offer);
     });
-  }
-
-  /**
-   * Helper method to parse counterparty XML data.
-   * @param xmlData
-   */
-  protected parseCounterpartyXmlData(xmlData: any): Counterparty {
-    const counterparty: Counterparty = {
-      id: xmlData.Ид,
-      name: xmlData.Наименование
-    };
-
-    // Detect company info or person info
-    if (xmlData.ОфициальноеНаименование) {
-      counterparty.companyInfo = {
-        officialName: xmlData.ОфициальноеНаименование,
-        inn: xmlData.ИНН,
-        kpp: xmlData.КПП,
-        okpo: xmlData.ОКПО
-      };
-    } else {
-      counterparty.personInfo = {
-        fullName: xmlData.ПолноеНаименование
-      };
-    }
-
-    return counterparty;
   }
 }

@@ -1,3 +1,5 @@
+import {Counterparty} from 'commerceml-parser-core';
+
 /**
  * Converts a single value to the array containing the single value.
  * If the value is undefined then returns an empty array.
@@ -13,4 +15,40 @@ export function convertToArray<T>(arrayOrSingleValue: T): T[] {
   }
 
   return arrayOrSingleValue;
+}
+
+/**
+ * Helper method to parse counterparty XML data.
+ * @param xmlData
+ */
+export function parseCounterpartyXmlData(xmlData: any): Counterparty {
+  const counterparty: Counterparty = {
+    id: xmlData.Ид,
+    name: xmlData.Наименование
+  };
+
+  // Detect company info or person info
+  if (xmlData.ОфициальноеНаименование) {
+    if (xmlData.ОфициальноеНаименование) {
+      counterparty.officialName = xmlData.ОфициальноеНаименование;
+    }
+
+    if (xmlData.ИНН) {
+      counterparty.inn = xmlData.ИНН;
+    }
+
+    if (xmlData.КПП) {
+      counterparty.kpp = xmlData.КПП;
+    }
+
+    if (xmlData.ОКПО) {
+      counterparty.okpo = xmlData.ОКПО;
+    }
+  } else {
+    if (xmlData.ПолноеНаименование) {
+      counterparty.fullName = xmlData.ПолноеНаименование;
+    }
+  }
+
+  return counterparty;
 }

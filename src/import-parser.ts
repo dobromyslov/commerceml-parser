@@ -5,10 +5,9 @@ import {
   ClassifierGroup,
   ClassifierProperty,
   CommercialInformation,
-  Counterparty,
   Product
 } from 'commerceml-parser-core';
-import {convertToArray} from './utils';
+import {convertToArray, parseCounterpartyXmlData} from './utils';
 
 export class CommerceMlImportParser extends CommerceMlAbstractParser {
   /**
@@ -84,7 +83,7 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
       const classifier: Classifier = {
         id: classifierXml.Ид,
         name: classifierXml.Наименование,
-        owner: this.parseCounterpartyXmlData(classifierXml.Владелец)
+        owner: parseCounterpartyXmlData(classifierXml.Владелец)
       };
 
       await callback(classifier);
@@ -139,12 +138,14 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
         type: propertyXml.ТипЗначений
       };
 
-      classifierProperty.dictionaryValues = [];
-      for (const dictionaryValue of convertToArray(propertyXml.ВариантыЗначений?.Справочник)) {
-        classifierProperty.dictionaryValues.push({
-          id: dictionaryValue.ИдЗначения,
-          value: dictionaryValue.Значение
-        });
+      if (propertyXml.ВариантыЗначений?.Справочник) {
+        classifierProperty.dictionaryValues = [];
+        for (const dictionaryValue of convertToArray(propertyXml.ВариантыЗначений?.Справочник)) {
+          classifierProperty.dictionaryValues.push({
+            id: dictionaryValue.ИдЗначения,
+            value: dictionaryValue.Значение
+          });
+        }
       }
 
       await callback(classifierProperty);
@@ -164,7 +165,7 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
         id: catalogXml.Ид,
         classifierId: catalogXml.ИдКлассификатора,
         name: catalogXml.Наименование,
-        owner: this.parseCounterpartyXmlData(catalogXml.Владелец),
+        owner: parseCounterpartyXmlData(catalogXml.Владелец),
         products: []
       };
 
@@ -222,66 +223,43 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
         };
       }
 
-      product.propertyValues = [];
-      for (const propertyValue of convertToArray(productXml.ЗначенияСвойств?.ЗначенияСвойства)) {
-        // Multi values
-        if (Array.isArray(propertyValue.Значение)) {
-          product.propertyValues.push({
-            id: propertyValue.Ид,
-            values: propertyValue.Значение
-          });
-        } else {
-          product.propertyValues.push({
-            id: propertyValue.Ид,
-            values: [propertyValue.Значение]
-          });
+      if (productXml.ЗначенияСвойств?.ЗначенияСвойства) {
+        product.propertyValues = [];
+        for (const propertyValue of convertToArray(productXml.ЗначенияСвойств?.ЗначенияСвойства)) {
+          // Multi values
+          if (Array.isArray(propertyValue.Значение)) {
+            product.propertyValues.push({
+              id: propertyValue.Ид,
+              values: propertyValue.Значение
+            });
+          } else {
+            product.propertyValues.push({
+              id: propertyValue.Ид,
+              values: [propertyValue.Значение]
+            });
+          }
         }
       }
 
-      product.requisiteValues = [];
-      for (const requisiteValue of convertToArray(productXml.ЗначенияРеквизитов?.ЗначениеРеквизита)) {
-        // Multi values
-        if (Array.isArray(requisiteValue.Значение)) {
-          product.requisiteValues.push({
-            name: requisiteValue.Наименование,
-            values: requisiteValue.Значение
-          });
-        } else {
-          product.requisiteValues.push({
-            name: requisiteValue.Наименование,
-            values: [requisiteValue.Значение]
-          });
+      if (productXml.ЗначенияРеквизитов?.ЗначениеРеквизита) {
+        product.requisiteValues = [];
+        for (const requisiteValue of convertToArray(productXml.ЗначенияРеквизитов?.ЗначениеРеквизита)) {
+          // Multi values
+          if (Array.isArray(requisiteValue.Значение)) {
+            product.requisiteValues.push({
+              name: requisiteValue.Наименование,
+              values: requisiteValue.Значение
+            });
+          } else {
+            product.requisiteValues.push({
+              name: requisiteValue.Наименование,
+              values: [requisiteValue.Значение]
+            });
+          }
         }
       }
 
       await callback(product);
     });
-  }
-
-  /**
-   * Helper method to parse counterparty XML data.
-   * @param xmlData
-   */
-  protected parseCounterpartyXmlData(xmlData: any): Counterparty {
-    const counterparty: Counterparty = {
-      id: xmlData.Ид,
-      name: xmlData.Наименование
-    };
-
-    // Detect company info or person info
-    if (xmlData.ОфициальноеНаименование) {
-      counterparty.companyInfo = {
-        officialName: xmlData.ОфициальноеНаименование,
-        inn: xmlData.ИНН,
-        kpp: xmlData.КПП,
-        okpo: xmlData.ОКПО
-      };
-    } else {
-      counterparty.personInfo = {
-        fullName: xmlData.ПолноеНаименование
-      };
-    }
-
-    return counterparty;
   }
 }
