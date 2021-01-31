@@ -8,6 +8,7 @@ import {
   PriceType,
   Warehouse
 } from 'commerceml-parser-core';
+import {convertToArray} from './utils';
 
 export class CommerceMlOffersParser extends CommerceMlAbstractParser {
   /**
@@ -102,7 +103,7 @@ export class CommerceMlOffersParser extends CommerceMlAbstractParser {
         priceTypes: []
       };
 
-      for (const priceTypeXml of offersPackageXml.ТипыЦен.ТипЦены ?? []) {
+      for (const priceTypeXml of convertToArray(offersPackageXml.ТипыЦен?.ТипЦены)) {
         const priceType: PriceType = {
           id: priceTypeXml.Ид,
           name: priceTypeXml.Наименование,
@@ -151,28 +152,24 @@ export class CommerceMlOffersParser extends CommerceMlAbstractParser {
         quantity: offerXml.Количество
       };
 
-      if (offerXml.Цены?.Цена?.length > 0) {
-        offer.prices = [];
-        for (const priceXml of offerXml.Цены.Цена) {
-          offer.prices.push({
-            representation: priceXml.Представление,
-            priceTypeId: priceXml.ИдТипаЦены,
-            pricePerUnit: priceXml.ЦенаЗаЕдиницу,
-            currency: priceXml.Валюта,
-            unitAcronym: priceXml.Единица,
-            coefficient: priceXml.Коэффициент
-          });
-        }
+      offer.prices = [];
+      for (const priceXml of convertToArray(offerXml.Цены?.Цена)) {
+        offer.prices.push({
+          representation: priceXml.Представление,
+          priceTypeId: priceXml.ИдТипаЦены,
+          pricePerUnit: priceXml.ЦенаЗаЕдиницу,
+          currency: priceXml.Валюта,
+          unitAcronym: priceXml.Единица,
+          coefficient: priceXml.Коэффициент
+        });
       }
 
-      if (offerXml.Склад?.length > 0) {
-        offer.stocks = [];
-        for (const stockXml of offerXml.Склад) {
-          offer.stocks.push({
-            warehouseId: stockXml._ИдСклада,
-            quantity: Number.parseInt(stockXml._КоличествоНаСкладе, 10)
-          });
-        }
+      offer.stocks = [];
+      for (const stockXml of convertToArray(offerXml.Склад)) {
+        offer.stocks.push({
+          warehouseId: stockXml._ИдСклада,
+          quantity: Number.parseInt(stockXml._КоличествоНаСкладе, 10)
+        });
       }
 
       await callback(offer);

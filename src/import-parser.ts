@@ -11,6 +11,7 @@ import {
   PropertyValue,
   RequisiteValue
 } from 'commerceml-parser-core';
+import {convertToArray} from './utils';
 
 export class CommerceMlImportParser extends CommerceMlAbstractParser {
   /**
@@ -107,10 +108,8 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
       };
 
       const children: ClassifierGroup[] = [];
-      if (groupData.Группы?.Группа?.length > 0) {
-        for (const child of groupData.Группы.Группа) {
-          children.push(processGroup(child));
-        }
+      for (const child of convertToArray(groupData.Группы?.Группа)) {
+        children.push(processGroup(child));
       }
 
       if (children.length > 0) {
@@ -143,15 +142,14 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
         type: propertyXml.ТипЗначений
       };
 
-      if (propertyXml.ВариантыЗначений?.Справочник?.length > 0) {
-        classifierProperty.dictionaryValues = [];
-        for (const dictionaryValue of propertyXml.ВариантыЗначений.Справочник) {
-          classifierProperty.dictionaryValues.push({
-            id: dictionaryValue.ИдЗначения,
-            value: dictionaryValue.Значение
-          } as DictionaryValue);
-        }
+      classifierProperty.dictionaryValues = [];
+      for (const dictionaryValue of convertToArray(propertyXml.ВариантыЗначений?.Справочник)) {
+        classifierProperty.dictionaryValues.push({
+          id: dictionaryValue.ИдЗначения,
+          value: dictionaryValue.Значение
+        });
       }
+
 
       await callback(classifierProperty);
     });
@@ -201,30 +199,19 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
       };
 
       if (productXml.Картинка) {
-        if (Array.isArray(productXml.Картинка)) {
-          product.images = [];
-          for (const imagePath of productXml.Картинка) {
-            product.images.push(imagePath);
-          }
-        } else {
-          product.images = [productXml.Картинка];
+        product.images = [];
+        for (const imagePath of convertToArray(productXml.Картинка)) {
+          product.images.push(imagePath);
         }
       }
 
       if (productXml.СтавкиНалогов?.СтавкаНалога) {
-        if (Array.isArray(productXml.СтавкиНалогов?.СтавкаНалога)) {
-          product.taxRates = [];
-          for (const taxRateXml of productXml.СтавкиНалогов?.СтавкаНалога ?? []) {
-            product.taxRates.push({
-              name: taxRateXml.Наименование,
-              rate: taxRateXml.Ставка
-            });
-          }
-        } else {
-          product.taxRates = [{
-            name: productXml.СтавкиНалогов.СтавкаНалога.Наименование,
-            rate: productXml.СтавкиНалогов.СтавкаНалога.Ставка
-          }];
+        product.taxRates = [];
+        for (const taxRateXml of convertToArray(productXml.СтавкиНалогов?.СтавкаНалога)) {
+          product.taxRates.push({
+            name: taxRateXml.Наименование,
+            rate: taxRateXml.Ставка
+          });
         }
       }
 
@@ -239,37 +226,35 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
         };
       }
 
-      if (productXml.ЗначенияСвойств?.ЗначенияСвойства?.length > 0) {
-        product.propertyValues = [];
-        for (const propertyValue of productXml.ЗначенияСвойств.ЗначенияСвойства) {
-          if (Array.isArray(propertyValue.Значение)) {
-            product.propertyValues.push({
-              id: propertyValue.Ид,
-              values: propertyValue.Значение
-            } as PropertyValue);
-          } else {
-            product.propertyValues.push({
-              id: propertyValue.Ид,
-              values: [propertyValue.Значение]
-            } as PropertyValue);
-          }
+      product.propertyValues = [];
+      for (const propertyValue of convertToArray(productXml.ЗначенияСвойств?.ЗначенияСвойства)) {
+        // Multi values
+        if (Array.isArray(propertyValue.Значение)) {
+          product.propertyValues.push({
+            id: propertyValue.Ид,
+            values: propertyValue.Значение
+          });
+        } else {
+          product.propertyValues.push({
+            id: propertyValue.Ид,
+            values: [propertyValue.Значение]
+          });
         }
       }
 
-      if (productXml.ЗначенияРеквизитов?.ЗначениеРеквизита?.length > 0) {
-        product.requisiteValues = [];
-        for (const requisiteValue of productXml.ЗначенияРеквизитов.ЗначениеРеквизита ?? []) {
-          if (Array.isArray(requisiteValue.Значение)) {
-            product.requisiteValues.push({
-              name: requisiteValue.Наименование,
-              values: requisiteValue.Значение
-            } as RequisiteValue);
-          } else {
-            product.requisiteValues.push({
-              name: requisiteValue.Наименование,
-              values: [requisiteValue.Значение]
-            } as RequisiteValue);
-          }
+      product.requisiteValues = [];
+      for (const requisiteValue of convertToArray(productXml.ЗначенияРеквизитов?.ЗначениеРеквизита)) {
+        // Multi values
+        if (Array.isArray(requisiteValue.Значение)) {
+          product.requisiteValues.push({
+            name: requisiteValue.Наименование,
+            values: requisiteValue.Значение
+          });
+        } else {
+          product.requisiteValues.push({
+            name: requisiteValue.Наименование,
+            values: [requisiteValue.Значение]
+          });
         }
       }
 
