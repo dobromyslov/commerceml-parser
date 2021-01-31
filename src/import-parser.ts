@@ -6,10 +6,7 @@ import {
   ClassifierProperty,
   CommercialInformation,
   Counterparty,
-  DictionaryValue,
-  Product,
-  PropertyValue,
-  RequisiteValue
+  Product
 } from 'commerceml-parser-core';
 import {convertToArray} from './utils';
 
