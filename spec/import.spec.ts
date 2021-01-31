@@ -1,4 +1,4 @@
-import {CommerceMlImportParser} from 'commerceml-parser';
+import {CommerceMlImportParser} from '../src';
 import {createReadStream} from 'fs';
 
 describe('async import', () => {
@@ -7,39 +7,68 @@ describe('async import', () => {
     const parser = new CommerceMlImportParser();
 
     parser.onCommercialInformation(commercialInformation => {
-      return new Promise((resolve, reject) => {
-        console.log('Commercial Information');
-      });
+      console.log('Commercial Information');
+      /*
+      return new Promise<void>(async (resolve, reject) => {
+        await new Promise<void>((resolve1, reject1) => {
+          console.log('Commercial Information');
+          resolve1();
+        });
+        resolve();
+      });*/
     });
 
     parser.onClassifier(classifier => {
-      return new Promise((resolve, reject) => {
-        console.log('Classifier');
+      return new Promise<void>(async (resolve) => {
+        await new Promise<void>((resolve1) => {
+          console.log('Classifier');
+          resolve1();
+        });
+        resolve();
       });
     });
 
     parser.onClassifierGroup(classifierGroup => {
-      return new Promise((resolve, reject) => {
-        console.log('Classifier group');
+      return new Promise<void>(async (resolve) => {
+        await new Promise<void>((resolve1) => {
+          console.log('Classifier group');
+          resolve1();
+        });
+        resolve();
       });
     });
 
     parser.onClassifierProperty(classifierProperty => {
-      return new Promise((resolve, reject) => {
-        console.log('Classifier property');
+      return new Promise<void>(async (resolve) => {
+        await new Promise<void>((resolve1) => {
+          console.log('Classifier property');
+          resolve1();
+        });
+        resolve();
       });
     });
 
-    parser.onCatalog(catalog => {
-      return new Promise((resolve, reject) => {
-        for (let i = 0; i < 10000000; i++) {}
-        console.log('Catalog');
+    parser.onCatalog(async catalog => {
+      console.log('Start');
+      await new Promise<void>(async (resolve) => {
+        await new Promise<void>((resolve1) => {
+          for (let i = 0; i < 1000000000; i++) {
+          }
+          console.log('First Level Promise End');
+          resolve1();
+        });
+        console.log('Second Level Promise End');
+        resolve();
       });
     });
 
     parser.onProduct(product => {
-      return new Promise((resolve, reject) => {
-        console.log('Product');
+      return new Promise<void>(async (resolve) => {
+        await new Promise<void>((resolve1) => {
+          console.log('Product', product.id);
+          resolve1();
+        });
+        resolve();
       });
     });
 

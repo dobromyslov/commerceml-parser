@@ -61,14 +61,16 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
    * Parses commercial information schemaVersion and creationTimestamp attributes.
    * @param callback
    */
-  public onCommercialInformation(callback: (commercialInformation: CommercialInformation) => void): void {
-    this.stream.on('commercialInformation', (data: any) => {
+  public onCommercialInformation(
+    callback: (commercialInformation: CommercialInformation) => void | Promise<void>
+  ): void {
+    this.eventEmitter.on('commercialInformation', async (data: any) => {
       const commercialInformation: CommercialInformation = {
         schemaVersion: data.КоммерческаяИнформация._ВерсияСхемы,
         creationTimestamp: new Date(data.КоммерческаяИнформация._ДатаФормирования)
       };
 
-      callback(commercialInformation);
+      await callback(commercialInformation);
     });
   }
 
@@ -76,8 +78,10 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
    * Parses classifier block header without details.
    * @param callback
    */
-  public onClassifier(callback: (classifier: Classifier) => void): void {
-    this.stream.on('classifier', (data: any) => {
+  public onClassifier(
+    callback: (classifier: Classifier) => void | Promise<void>
+  ): void {
+    this.eventEmitter.on('classifier', async (data: any) => {
       const classifierXml = data.Классификатор;
       const classifier: Classifier = {
         id: classifierXml.Ид,
@@ -85,7 +89,7 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
         owner: this.parseCounterpartyXmlData(classifierXml.Владелец)
       };
 
-      callback(classifier);
+      await callback(classifier);
     });
   }
 
@@ -93,7 +97,9 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
    * Parses classifier groups.
    * @param callback
    */
-  public onClassifierGroup(callback: (classifierGroup: ClassifierGroup) => void): void {
+  public onClassifierGroup(
+    callback: (classifierGroup: ClassifierGroup) => void | Promise<void>
+  ): void {
     const processGroup = (groupData: any): ClassifierGroup => {
       const result: ClassifierGroup = {
         id: groupData.Ид,
@@ -114,10 +120,10 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
       return result;
     };
 
-    this.stream.on('classifierGroup', (data: any) => {
+    this.eventEmitter.on('classifierGroup', async (data: any) => {
       const classifierGroupXml = data.Группа;
       const classifierGroup: ClassifierGroup = processGroup(classifierGroupXml);
-      callback(classifierGroup);
+      await callback(classifierGroup);
     });
   }
 
@@ -125,8 +131,10 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
    * Parses classifier properties.
    * @param callback
    */
-  public onClassifierProperty(callback: (classifierProperty: ClassifierProperty) => void): void {
-    this.stream.on('classifierProperty', (data: any) => {
+  public onClassifierProperty(
+    callback: (classifierProperty: ClassifierProperty) => void | Promise<void>
+  ): void {
+    this.eventEmitter.on('classifierProperty', async (data: any) => {
       const propertyXml = data.Свойство;
 
       const classifierProperty: ClassifierProperty = {
@@ -145,7 +153,7 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
         }
       }
 
-      callback(classifierProperty);
+      await callback(classifierProperty);
     });
   }
 
@@ -153,8 +161,10 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
    * Parses catalog header without details.
    * @param callback
    */
-  public onCatalog(callback: (catalog: Catalog) => void) {
-    this.stream.on('catalog', (data: any) => {
+  public onCatalog(
+    callback: (catalog: Catalog) => void | Promise<void>
+  ): void {
+    this.eventEmitter.on('catalog', async (data: any) => {
       const catalogXml = data.Каталог;
       const catalog: Catalog = {
         id: catalogXml.Ид,
@@ -164,7 +174,7 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
         products: []
       };
 
-      callback(catalog);
+      await callback(catalog);
     });
   }
 
@@ -172,8 +182,10 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
    * Parses catalog products.
    * @param callback
    */
-  public onProduct(callback: (product: Product) => void) {
-    this.stream.on('product', (data: any) => {
+  public onProduct(
+    callback: (product: Product) => void | Promise<void>
+  ): void {
+    this.eventEmitter.on('product', async (data: any) => {
       const productXml = data.Товар;
       const product: Product = {
         id: productXml.Ид,
@@ -261,7 +273,7 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
         }
       }
 
-      callback(product);
+      await callback(product);
     });
   }
 

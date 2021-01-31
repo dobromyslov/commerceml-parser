@@ -60,14 +60,14 @@ export class CommerceMlOffersParser extends CommerceMlAbstractParser {
    * Parses commercial information schemaVersion and creationTimestamp attributes.
    * @param callback
    */
-  public onCommercialInformation(callback: (commercialInformation: CommercialInformation) => void): void {
-    this.stream.on('commercialInformation', (data: any) => {
+  public onCommercialInformation(callback: (commercialInformation: CommercialInformation) => void | Promise<void>): void {
+    this.eventEmitter.on('commercialInformation', async (data: any) => {
       const commercialInformation: CommercialInformation = {
         schemaVersion: data.КоммерческаяИнформация._ВерсияСхемы,
         creationTimestamp: new Date(data.КоммерческаяИнформация._ДатаФормирования)
       };
 
-      callback(commercialInformation);
+      await callback(commercialInformation);
     });
   }
 
@@ -75,8 +75,8 @@ export class CommerceMlOffersParser extends CommerceMlAbstractParser {
    * Parses classifier block header without details.
    * @param callback
    */
-  public onClassifier(callback: (classifier: Classifier) => void): void {
-    this.stream.on('classifier', (data: any) => {
+  public onClassifier(callback: (classifier: Classifier) => void | Promise<void>): void {
+    this.eventEmitter.on('classifier', async (data: any) => {
       const classifierXml = data.Классификатор;
       const classifier: Classifier = {
         id: classifierXml.Ид,
@@ -84,12 +84,12 @@ export class CommerceMlOffersParser extends CommerceMlAbstractParser {
         owner: this.parseCounterpartyXmlData(classifierXml.Владелец)
       };
 
-      callback(classifier);
+      await callback(classifier);
     });
   }
 
-  public onOffersPackage(callback: (offersPackage: OffersPackage) => void): void {
-    this.stream.on('offersPackage', (data: any) => {
+  public onOffersPackage(callback: (offersPackage: OffersPackage) => void | Promise<void>): void {
+    this.eventEmitter.on('offersPackage', async (data: any) => {
       const offersPackageXml = data.ПакетПредложений;
       const offersPackage: OffersPackage = {
         changesOnly: offersPackageXml._СодержитТолькоИзменения,
@@ -120,24 +120,24 @@ export class CommerceMlOffersParser extends CommerceMlAbstractParser {
         offersPackage.priceTypes.push(priceType);
       }
 
-      callback(offersPackage);
+      await callback(offersPackage);
     });
   }
 
-  public onWarehouse(callback: (warehouse: Warehouse) => void): void {
-    this.stream.on('warehouse', (data: any) => {
+  public onWarehouse(callback: (warehouse: Warehouse) => void | Promise<void>): void {
+    this.eventEmitter.on('warehouse', async (data: any) => {
       const warehouseXml = data.Склад;
       const warehouse: Warehouse = {
         id: warehouseXml.Ид,
         name: warehouseXml.Наименование
       };
 
-      callback(warehouse);
+      await callback(warehouse);
     });
   }
 
-  public onOffer(callback: (offer: Offer) => void): void {
-    this.stream.on('offer', (data: any) => {
+  public onOffer(callback: (offer: Offer) => void | Promise<void>): void {
+    this.eventEmitter.on('offer', async (data: any) => {
       const offerXml = data.Предложение;
       const offer: Offer = {
         id: offerXml.Ид,
@@ -175,7 +175,7 @@ export class CommerceMlOffersParser extends CommerceMlAbstractParser {
         }
       }
 
-      callback(offer);
+      await callback(offer);
     });
   }
 
