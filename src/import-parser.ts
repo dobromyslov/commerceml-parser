@@ -201,7 +201,7 @@ export class CommerceMlImportParser extends CommerceMlAbstractParser {
       }
 
       if (productXml.Описание) {
-        product.description = productXml.Описание
+        product.description = productXml.Описание;
       }
 
       if (productXml.Картинка) {

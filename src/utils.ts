@@ -48,6 +48,22 @@ export function parseCounterpartyXmlData(xmlData: any): Counterparty {
     if (xmlData.ПолноеНаименование) {
       counterparty.fullName = xmlData.ПолноеНаименование;
     }
+
+    if (xmlData.Обращение) {
+      counterparty.title = xmlData.Обращение;
+    }
+
+    if (xmlData.Фамилия) {
+      counterparty.lastName = xmlData.Фамилия;
+    }
+
+    if (xmlData.Имя) {
+      counterparty.firstName = xmlData.Имя;
+    }
+
+    if (xmlData.Отчество) {
+      counterparty.middleName = xmlData.Отчество;
+    }
   }
 
   return counterparty;
